@@ -10,12 +10,16 @@ function gerarFaturaStr(fatura, pecas) {
     minimumFractionDigits: 2,
   }).format;
 
-  for (let apre of fatura.apresentacoes) {
-    const peca = pecas[apre.id];
+  function getPeca(apresentacao) {
+    return pecas[apresentacao.id];
+  }
 
-    function calcularTotalApresentacao(apre, peca) {
+  for (let apre of fatura.apresentacoes) {
+    const peca = getPeca(apre);
+
+    function calcularTotalApresentacao(apre) {
       let total = 0;
-      switch (peca.tipo) {
+      switch (getPeca(apre).tipo) {
         case "tragedia":
           total = 40000;
           if (apre.audiencia > 30) {
@@ -30,12 +34,12 @@ function gerarFaturaStr(fatura, pecas) {
           total += 300 * apre.audiencia;
           break;
         default:
-          throw new Error(`Peça desconhecia: ${peca.tipo}`);
+          throw new Error(`Peça desconhecia: ${getPeca(apre).tipo}`);
       }
       return total;
     }
 
-    let total = calcularTotalApresentacao(apre, peca);
+    let total = calcularTotalApresentacao(apre);
 
     // créditos para próximas contratações
     creditos += Math.max(apre.audiencia - 30, 0);
